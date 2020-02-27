@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Odoo Pro
 // @namespace    http://tampermonkey.net/
-// @version      0.3
+// @version      0.4
 // @description  Some Odoo utilities
 // @author       Manantt
 // @match        https://cosmomedia-serdata.odoo.com/*
@@ -21,48 +21,62 @@ var horas = 0;
 var minutos = 0;
 var segundos = 0;
 
-$.ajax({
-    url: 'https://cosmomedia-serdata.odoo.com/web/dataset/search_read',
-    type: "POST",
-    dataType: "json",
-    data: payload,
-    contentType: "application/json",
-    success: function(data){
-        var seg = 0;
-        var trabajando = false;
-        $.each(data.result.records, function(key, value) {
-            var entrada = new Date(value.check_in);
-            var salida = null;
-            if(value.check_out) {
-                salida = new Date(value.check_out);
-            } else {
-                trabajando = true;
-                salida = new Date();
-                salida.setHours(salida.getHours() - 1);
-            }
-            if(esHoy(entrada)) {
-                var diffSegundos = (salida - entrada) / 1000;
-                seg += diffSegundos;
-            }
+recalcularTiempos();
+(function() {
+    setTimeout(function(){
+        $(".o_hr_attendance_kiosk_mode").click(function(){
+            setTimeout(function(){
+                recalcularTiempos();
+            }, 2000);
         });
-        parseHoras(seg);
-        document.title = "Odoo - " + horas + "h " + minutos + "m " + segundos + "s";
-        setInterval(function(){
-            if(trabajando){
-                segundos++;
-                if(segundos >= 60) {
-                    minutos++;
-                    segundos -= 60;
+    }, 2000);
+})();
+
+function recalcularTiempos(){
+    console.error("asdf");
+    $.ajax({
+        url: 'https://cosmomedia-serdata.odoo.com/web/dataset/search_read',
+        type: "POST",
+        dataType: "json",
+        data: payload,
+        contentType: "application/json",
+        success: function(data){
+            var seg = 0;
+            var trabajando = false;
+            $.each(data.result.records, function(key, value) {
+                var entrada = new Date(value.check_in);
+                var salida = null;
+                if(value.check_out) {
+                    salida = new Date(value.check_out);
+                } else {
+                    trabajando = true;
+                    salida = new Date();
+                    salida.setHours(salida.getHours() - 1);
                 }
-                if(minutos >= 60) {
-                    horas++;
-                    minutos -= 60;
+                if(esHoy(entrada)) {
+                    var diffSegundos = (salida - entrada) / 1000;
+                    seg += diffSegundos;
                 }
-            }
+            });
+            parseHoras(seg);
             document.title = "Odoo - " + horas + "h " + minutos + "m " + segundos + "s";
-        }, 1000);
-    }
-});
+            setInterval(function(){
+                if(trabajando){
+                    segundos++;
+                    if(segundos >= 60) {
+                        minutos++;
+                        segundos -= 60;
+                    }
+                    if(minutos >= 60) {
+                        horas++;
+                        minutos -= 60;
+                    }
+                }
+                document.title = "Odoo - " + horas + "h " + minutos + "m " + segundos + "s";
+            }, 1000);
+        }
+    });
+}
 
 function parseHoras(seg) {
     horas = parseInt(seg / 3600);
