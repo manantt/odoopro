@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Odoo Pro
 // @namespace    http://tampermonkey.net/
-// @version      0.5
+// @version      0.6
 // @description  Some Odoo utilities
 // @author       Manantt
 // @match        https://cosmomedia-serdata.odoo.com/*
@@ -31,6 +31,7 @@ function autoSetIdEmpleado() {
 }
 
 function semana(){
+    return;
 	var hoy = new Date();
 	var semanaPasada = new Date;
     semanaPasada = new Date(semanaPasada.setDate(semanaPasada.getDate() - 7));
@@ -186,5 +187,5 @@ function init() {
     		$("#pro").css("color", "rgb(100, 255, 100);");
     		clearInterval(interval);
     	}
-    }, 3000);
+    }, 500);
 }
