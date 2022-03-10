@@ -25,7 +25,7 @@ recalcularTiempos();
 
 function autoSetIdEmpleado() {
     if(window.location.href == "https://cosmomedia-serdata.odoo.com/web#action=566&menu_id=393") {
-        idEmpleado = $("img.img.rounded-circle").attr("src").replace("/web/image?model=hr.employee&field=image_medium&id=", "");;
+        idEmpleado = $("img.img.rounded-circle").attr("src").replace("/web/image?model=hr.employee.public&field=image_128&id=", "");;
         localStorage.setItem('id_empleado_odoo', idEmpleado);
     }
 }
